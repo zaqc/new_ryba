@@ -214,7 +214,6 @@ set_global_assignment -name VERILOG_FILE eth_v/eth/eth_pkt_type.v
 set_global_assignment -name VERILOG_FILE eth_v/eth/eth_parser.v
 set_global_assignment -name VERILOG_FILE eth_v/eth/cmd_parser.v
 set_global_assignment -name VERILOG_FILE ryba_new_v8.v
-set_global_assignment -name QIP_FILE emac.qip
 set_global_assignment -name QIP_FILE main_pll.qip
 set_global_assignment -name QIP_FILE pll_eth.qip
 set_global_assignment -name QIP_FILE eth_pll.qip
