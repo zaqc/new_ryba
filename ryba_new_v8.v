@@ -41,6 +41,82 @@ module ryba_new_v8(
 	output 		[3:0] 			led
 );
 
-assign alt_rdy = 1'b1;
+	assign alt_rdy = 1'b1;
+	
+	wire						sys_clk;
+	wire						rst_n;
+	wire						main_rst_n;
+	wire						eth_rst_n;
+	
+	main_pll main_pll_u(
+		.inclk0(clk50),
+		
+		.c0(sys_clk),
+		
+		.locked(main_rst_n)
+	);
+	
+	wire		[31:0]			packet_data;
+	wire						packet_vld;
+	wire						packet_rdy;
+	wire						packet_ready;
+	wire		[15:0]			packet_size;
+	
+	assign packet_size = 16'd512;
+	assign packet_vld = 1'b1;
+	
+	reg			[23:0]			main_sync;
+	always @ (posedge sys_clk or negedge rst_n) 
+		if(~rst_n) 
+			main_sync <= 24'd0;
+		else
+			main_sync <= main_sync + 1'd1;
+	
+	assign packet_ready = &{main_sync};
+		
+	eth_pll eth_pll_u(
+		.inclk0(clk50),
+		.c0(etclk),
+		.locked(eth_rst_n)
+	);
+	
+	assign nrst = eth_rst_n;
+	
+	
+	reg			[7:0]			rst_ss = 8'd0;
+	always @ (posedge sys_clk)
+		if(!rst_n)
+			rst_ss <= {rst_ss[6:0], eth_rst_n & main_rst_n};
+	
+	assign rst_n = rst_ss[7];
+	
+
+	emac_eth emac_eth_unit(
+		.rst_n(rst_n),
+		.sysclk(sys_clk),
+		
+		.i_sync(packet_ready),
+		
+		.i_frame_data(packet_data),
+		.i_frame_vld(packet_vld),
+		.o_frame_rdy(packet_rdy),
+		
+		.i_frame_size(packet_size),
+		
+		.i_refclk(refclko),
+		//.o_refclk(refclk),
+		
+		//.o_ephy_rst_n(ephy1_rstn),
+		
+		.i_rxd(rxd),
+		.i_rxdv(crs_dv),
+		.i_rxer(rx_er),
+		
+		.o_txd(txd),
+		.o_txen(txen),
+		
+		.o_mdc(mdc),
+		.io_mdio(mdio)
+	);
 
 endmodule
