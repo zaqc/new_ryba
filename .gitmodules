@@ -1,4 +1,7 @@
 [submodule "eth_v"]
 	path = eth_v
-	url = git@github.com:zaqc/eth_v.git
+	url = git@github.com-zaqc:zaqc/eth_v.git
 	branch = usha
+[submodule "dscope_new_ryba"]
+	path = dscope_new_ryba
+	url = git@github.com-zaqc:zaqc/dscope_new_ryba.git
