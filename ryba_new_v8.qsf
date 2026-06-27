@@ -193,6 +193,12 @@ set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -
 set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS REGULAR IO"
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name QIP_FILE eth_v/emac.qip
+set_global_assignment -name VERILOG_FILE dscope_new_ryba/src/ascan.v
+set_global_assignment -name VERILOG_FILE dscope_new_ryba/src/dc_fifo.v
+set_global_assignment -name VERILOG_FILE dscope_new_ryba/src/dp_ram.v
+set_global_assignment -name VERILOG_FILE dscope_new_ryba/src/rst_sync.v
+set_global_assignment -name VERILOG_FILE dscope_new_ryba/src/dscope_main.v
 set_global_assignment -name SDC_FILE ryba_new_v8.sdc
 set_global_assignment -name QIP_FILE eth_v/eth/eth_tx_fifo.qip
 set_global_assignment -name VERILOG_FILE eth_v/emac_eth.v

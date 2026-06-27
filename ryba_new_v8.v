@@ -43,7 +43,8 @@ module ryba_new_v8(
 
 	assign alt_rdy = 1'b1;
 	
-	wire						sys_clk;
+	wire						sys_clk;	// 80 MHz
+	wire						adc_clk;	// 65 MHz
 	wire						rst_n;
 	wire						main_rst_n;
 	wire						eth_rst_n;
@@ -52,6 +53,7 @@ module ryba_new_v8(
 		.inclk0(clk50),
 		
 		.c0(sys_clk),
+		.c1(adc_clk),
 		
 		.locked(main_rst_n)
 	);
@@ -62,8 +64,8 @@ module ryba_new_v8(
 	wire						packet_ready;
 	wire		[15:0]			packet_size;
 	
-	assign packet_size = 16'd512;
-	assign packet_vld = 1'b1;
+	//assign packet_size = 16'd512;
+	//assign packet_vld = 1'b1;
 	
 	reg			[23:0]			main_sync;
 	always @ (posedge sys_clk or negedge rst_n) 
@@ -72,7 +74,8 @@ module ryba_new_v8(
 		else
 			main_sync <= main_sync + 1'd1;
 	
-	assign packet_ready = &{main_sync};
+	wire						dscope_sync;
+	assign dscope_sync = &{main_sync};
 		
 	eth_pll eth_pll_u(
 		.inclk0(clk50),
@@ -90,9 +93,10 @@ module ryba_new_v8(
 	
 	assign rst_n = rst_ss[7];
 	
+	wire						sys_rst_n;
 
 	emac_eth emac_eth_unit(
-		.rst_n(rst_n),
+		.rst_n(sys_rst_n),
 		.sysclk(sys_clk),
 		
 		.i_sync(packet_ready),
@@ -118,5 +122,32 @@ module ryba_new_v8(
 		.o_mdc(mdc),
 		.io_mdio(mdio)
 	);
-
+	
+	reg			[11:0]			adc_data;
+	always @ (posedge adc_clk) adc_data <= adc_data + 1'd1;
+	
+	dscope_main #(
+		.ASCAN_ADDR_WIDTH(10)
+	) dscope_main_u (
+		.rst_n(rst_n),
+		.sys_clk(sys_clk),
+		.adc_clk(adc_clk),
+		
+		.i_sys_sync(dscope_sync),
+		
+		.i_adc_data(adc_data),
+		
+		.i_n_samples(16'd256),
+		.i_accum(8'd1),
+		.i_accum_type(2'd1),
+		.i_skip_ticks(16'd1024),
+		
+		.o_out_data(packet_data),
+		.o_out_vld(packet_vld),
+		.i_out_rdy(packet_rdy),
+		.o_out_size(packet_size),
+		.o_data_ready(packet_ready),
+		
+		.o_sys_rst_n(sys_rst_n)
+	);
 endmodule
