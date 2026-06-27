@@ -123,8 +123,11 @@ module ryba_new_v8(
 		.io_mdio(mdio)
 	);
 	
-	reg			[11:0]			adc_data;
-	always @ (posedge adc_clk) adc_data <= adc_data + 1'd1;
+	reg			[31:0]			adc_data;
+	always @ (posedge adc_clk) 
+		if(packet_vld & packet_rdy) adc_data <= adc_data + 1'd1;
+	
+	assign packet_data = adc_data;
 	
 	dscope_main #(
 		.ASCAN_ADDR_WIDTH(10)
@@ -135,14 +138,14 @@ module ryba_new_v8(
 		
 		.i_sys_sync(dscope_sync),
 		
-		.i_adc_data(adc_data),
+		.i_adc_data(adc_data[11:0]),
 		
 		.i_n_samples(16'd256),
 		.i_accum(8'd1),
 		.i_accum_type(2'd1),
 		.i_skip_ticks(16'd1024),
 		
-		.o_out_data(packet_data),
+		//.o_out_data(packet_data),
 		.o_out_vld(packet_vld),
 		.i_out_rdy(packet_rdy),
 		.o_out_size(packet_size),
