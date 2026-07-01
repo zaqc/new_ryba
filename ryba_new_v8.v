@@ -123,9 +123,16 @@ module ryba_new_v8(
 		.io_mdio(mdio)
 	);
 	
-	reg			[31:0]			adc_data;
+	wire						adc_sync;
+	reg			[11:0]			adc_data = 12'd0;
+	reg			[11:0]			adc_step = 12'd0;
 	always @ (posedge adc_clk) 
-		if(packet_vld & packet_rdy) adc_data <= adc_data + 1'd1;
+		if(adc_sync) begin
+			adc_data <= 32'd0;
+			adc_step <= adc_step + 1'd1;
+		end
+		else
+			adc_data <= adc_data + 1'd1;
 	
 	//assign packet_data = adc_data;
 	
@@ -138,7 +145,9 @@ module ryba_new_v8(
 		
 		.i_sys_sync(dscope_sync),
 		
-		.i_adc_data(adc_data[11:0]),
+		.o_adc_sync(adc_sync),
+		
+		.i_adc_data(adc_data + adc_step),
 		
 		.i_n_samples(16'd256),
 		.i_accum(8'd1),
