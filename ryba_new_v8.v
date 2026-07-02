@@ -147,12 +147,12 @@ module ryba_new_v8(
 		
 		.o_adc_sync(adc_sync),
 		
-		.i_adc_data(adc_data + adc_step),
+		.i_adc_data_ch0(adc_data + adc_step),
 		
-		.i_n_samples(16'd256),
-		.i_accum(8'd1),
-		.i_accum_type(2'd1),
-		.i_skip_ticks(16'd1024),
+//		.i_n_samples(16'd256),
+//		.i_accum(8'd1),
+//		.i_accum_type(2'd1),
+//		.i_skip_ticks(16'd1024),
 		
 		.o_out_data(packet_data),
 		.o_out_vld(packet_vld),
